@@ -1,0 +1,16 @@
+**/bin/
+**/obj/
+
+# Visual Studio gecici dosyalari
+**/.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Appsettings (Guvenlik icin Development ve Secret dosyalarini atma)
+**/appsettings.Development.json
+**/appsettings.local.json
+
+# --- Frontend (React) ---
+**/node_modules/
