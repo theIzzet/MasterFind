@@ -20,7 +20,7 @@ namespace Services.Auth
         }
        
 
-        public string GenerateToken(string userId, string email,/*string phoneNumber,*/ IEnumerable<string> roles)
+        public string GenerateToken(string userId, string email, string phoneNumber, IEnumerable<string> roles)
         {
             var claims = new List<Claim>
             {
@@ -35,11 +35,11 @@ namespace Services.Auth
                 claims.Add(new Claim(JwtRegisteredClaimNames.Email, email));
             }
 
-            //// Eğer telefon numarası varsa ekle
-            //if (!string.IsNullOrEmpty(phoneNumber))
-            //{
-            //    claims.Add(new Claim(ClaimTypes.MobilePhone, phoneNumber));
-            //}
+            // Eğer telefon numarası varsa ekle
+            if (!string.IsNullOrEmpty(phoneNumber))
+            {
+                claims.Add(new Claim(ClaimTypes.MobilePhone, phoneNumber));
+            }
 
             foreach (var role in roles)
             {
