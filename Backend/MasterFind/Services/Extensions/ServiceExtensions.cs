@@ -1,14 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Services.Auth;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens; // FileService burada olduğu için bu using önemli
+using Microsoft.IdentityModel.Tokens;
+using Services.Admin;
+using Services.Master;
 
 namespace Services.Extensions
 {
@@ -18,8 +16,6 @@ namespace Services.Extensions
         {
             services.Configure<JwtSettings>(configuration.GetSection("JWT"));
             services.AddScoped<JwtService>();
-
-
 
             services.AddAuthentication(options =>
             {
@@ -41,21 +37,13 @@ namespace Services.Extensions
                 };
             });
 
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
-
-            //services.AddAutoMapper(Assembly.GetExecutingAssembly());
-            //services.AddScoped<IAdminService, AdminService>();
-
-            //services.AddScoped<IMasterProfileService, MasterProfileService>();
-
-
-            //services.AddScoped<IAuthService, AuthService>();
-            ////services.AddScoped<Services.Master.IMasterProfileService, Services.Master.MasterProfileService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IMasterProfileService, MasterProfileService>();
+            services.AddScoped<IAdminService, AdminService>();
 
             return services;
-
         }
-
-
     }
 }
