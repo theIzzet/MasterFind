@@ -1,15 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Repositories.Data;
 using Repositories.Master;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-
 
 namespace Repositories.Extensions
 {
@@ -19,11 +16,10 @@ namespace Repositories.Extensions
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-            // 1. DbContext Ekleme
             services.AddDbContext<DataApplicationContext>(options =>
                 options.UseSqlite(connectionString));
 
-            // 2. Identity Ekleme (Bu kalmalı, veritabanı ile ilgili)
+            // 1. IDENTITY AYARLARI
             services.AddIdentity<AppUser, AppRole>(options =>
             {
                 options.Password.RequireDigit = true;
@@ -36,19 +32,59 @@ namespace Repositories.Extensions
             .AddEntityFrameworkStores<DataApplicationContext>()
             .AddDefaultTokenProviders();
 
-            // --- SİLİNEN KISIM BAŞLANGIÇ ---
-            // BURADAKİ AddAuthentication ve AddJwtBearer KODLARINI SİLDİM.
-            // ÇÜNKÜ ZATEN ServiceExtensions.cs İÇİNDE VARLAR.
-            // --- SİLİNEN KISIM BİTİŞ ---
+            // 2. JWT AUTHENTICATION AYARLARI
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidAudience = configuration["JWT:ValidAudience"],
+                    ValidIssuer = configuration["JWT:ValidIssuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"])),
+                    ClockSkew = TimeSpan.FromMinutes(5)
+                };
+
+                // --- KRİTİK HATA AYIKLAMA KODLARI (BUNLARI MUTLAKA EKLE) ---
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        // Header'ı string olarak al
+                        var authorization = context.Request.Headers["Authorization"].ToString();
+
+                        // Eğer boş değilse ve Bearer ile başlıyorsa
+                        if (!string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                        {
+                            // "Bearer " (7 karakter) kısmını kes at, gerisini Token olarak ver.
+                            context.Token = authorization.Substring("Bearer ".Length).Trim();
+                        }
+                        return Task.CompletedTask;
+                    },
+
+                    // Debug için (Hata devam ederse görelim diye kalsın)
+                    OnAuthenticationFailed = context =>
+                    {
+                        Console.WriteLine($" >>> TOKEN FAILED: {context.Exception.Message}");
+                        return Task.CompletedTask;
+                    }
+                };
+                // -------------------------------------------------------------
+            });
 
             services.AddCors(options =>
             {
                 options.AddPolicy("ReactJSCors", policy =>
                 {
-                    policy.WithOrigins(
-                            "https://localhost:3000",
-                            "https://localhost:11405"
-                        )
+                    policy.WithOrigins("https://localhost:3000", "https://localhost:11405")
                         .AllowAnyHeader()
                         .AllowAnyMethod();
                 });
@@ -58,6 +94,9 @@ namespace Repositories.Extensions
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IMasterProfileRepository, MasterProfileRepository>();
+            services.AddScoped(typeof(IGenericRepository<PortfolioItem>), typeof(GenericRepository<PortfolioItem>));
+            services.AddScoped(typeof(IGenericRepository<PortfolioImage>), typeof(GenericRepository<PortfolioImage>));
+
             return services;
         }
     }
