@@ -1,15 +1,16 @@
-using Microsoft.OpenApi.Models;
+﻿using Microsoft.OpenApi.Models;
+using Repositories.Extensions; 
+using Services.Extensions;     
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddRepositories(builder.Configuration);
 
-
+builder.Services.AddServices(builder.Configuration);
 
 builder.Services.AddSwaggerGen(option =>
 {
@@ -39,11 +40,9 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
-
-
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -52,6 +51,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
