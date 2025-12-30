@@ -16,9 +16,6 @@ namespace WebApi.Controllers
             _masterProfileService = masterProfileService;
         }
 
-        /// <summary>
-        /// Tüm hizmet kategorilerini ve alt hizmetlerini getirir.
-        /// </summary>
         [HttpGet("service-categories")]
         [AllowAnonymous]
         public async Task<IActionResult> GetAllServiceCategories()
@@ -26,7 +23,6 @@ namespace WebApi.Controllers
             var result = await _masterProfileService.GetAllServiceCategoriesAsync();
             return Ok(result);
         }
-        /// </summary>
         [HttpGet("search")]
         [AllowAnonymous] // Bu endpoint'e herkesin erişebilmesi için.
         public async Task<IActionResult> SearchMasters([FromQuery] int? serviceCategoryId, [FromQuery] int? locationId)
@@ -52,10 +48,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
-        
-        /// <summary>
-        /// Sistemdeki tüm konumları (İl/İlçe) getirir.
-        /// </summary>
+ 
         [HttpGet("locations")]
         [AllowAnonymous]
         public async Task<IActionResult> GetAllLocations()

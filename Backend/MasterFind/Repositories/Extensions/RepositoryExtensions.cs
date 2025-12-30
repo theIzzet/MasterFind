@@ -19,7 +19,6 @@ namespace Repositories.Extensions
             services.AddDbContext<DataApplicationContext>(options =>
                 options.UseSqlite(connectionString));
 
-            // 1. IDENTITY AYARLARI
             services.AddIdentity<AppUser, AppRole>(options =>
             {
                 options.Password.RequireDigit = true;
@@ -53,24 +52,19 @@ namespace Repositories.Extensions
                     ClockSkew = TimeSpan.FromMinutes(5)
                 };
 
-                // --- KRİTİK HATA AYIKLAMA KODLARI (BUNLARI MUTLAKA EKLE) ---
                 options.Events = new JwtBearerEvents
                 {
                     OnMessageReceived = context =>
                     {
-                        // Header'ı string olarak al
                         var authorization = context.Request.Headers["Authorization"].ToString();
 
-                        // Eğer boş değilse ve Bearer ile başlıyorsa
                         if (!string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
                         {
-                            // "Bearer " (7 karakter) kısmını kes at, gerisini Token olarak ver.
                             context.Token = authorization.Substring("Bearer ".Length).Trim();
                         }
                         return Task.CompletedTask;
                     },
 
-                    // Debug için (Hata devam ederse görelim diye kalsın)
                     OnAuthenticationFailed = context =>
                     {
                         Console.WriteLine($" >>> TOKEN FAILED: {context.Exception.Message}");

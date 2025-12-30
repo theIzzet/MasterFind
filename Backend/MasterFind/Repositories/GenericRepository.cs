@@ -1,7 +1,4 @@
-﻿
-
-// Dosya: Repositories/GenericRepository.cs
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Repositories.Data;
 using System.Linq.Expressions;
 

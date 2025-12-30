@@ -50,19 +50,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-//app.Use(async (context, next) =>
-//{
-//    var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
-//    if (!string.IsNullOrEmpty(authHeader))
-//    {
-//        Console.WriteLine($" >>> GELEN HEADER: {authHeader}");
-//    }
-//    else
-//    {
-//        Console.WriteLine(" >>> GELEN HEADER: BOŞ (NULL)!");
-//    }
-//    await next();
-//});
+
 app.UseAuthentication();
 app.UseAuthorization();
 
