@@ -192,7 +192,9 @@ namespace Services.Master
                 throw new ArgumentException("Dosya boş olamaz.");
             }
 
-            var targetFolder = Path.Combine(_webHostEnvironment.WebRootPath, subfolder);
+            string webRootPath = _webHostEnvironment.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+
+            var targetFolder = Path.Combine(webRootPath, subfolder);
 
             if (!Directory.Exists(targetFolder))
             {
@@ -209,7 +211,6 @@ namespace Services.Master
 
             return $"/{subfolder.Replace("\\", "/")}/{uniqueFileName}";
         }
-
 
 
         public async Task<ResultDto<PortfolioItemDto>> AddPortfolioItemAsync(string masterUserId, CreatePortfolioItemDto dto)

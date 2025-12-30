@@ -3,12 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Services.Admin;
 using Services.Admin.Dtos;
 
-namespace WebApi.Controllers // Namespace'i "WebApi.Controllers" olarak düzelttim
+namespace WebApi.Controllers 
 {
     [Route("api/admin")]
     [ApiController]
-    // [AllowAnonymous] <-- Bunu kaldırmalısın! Gerçek hayatta burası sadece Admin'e açık olmalı.
-    // Şimdilik test için [AllowAnonymous] kalabilir ama doğrusu:
     [Authorize(Roles = "Admin")]
     public class AdminController : ControllerBase
     {

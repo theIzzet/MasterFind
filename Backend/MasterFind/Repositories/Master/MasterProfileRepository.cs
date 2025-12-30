@@ -24,7 +24,6 @@ namespace Repositories.Master
         {
             IQueryable<MasterProfile> q = _context.MasterProfiles.AsNoTracking();
 
-            // Include'ları ayrı satırlarda ekle (q, IQueryable kalır)
             q = q.Include(p => p.AppUser);
             q = q.Include(p => p.Services);
             q = q.Include(p => p.Locations);
@@ -55,9 +54,9 @@ namespace Repositories.Master
             return await _context.MasterProfiles
                 .Include(mp => mp.Services)
                 .Include(mp => mp.Locations)
-                .Include(mp => mp.AppUser) // Kullanıcı bilgilerini de dahil edin.
+                .Include(mp => mp.AppUser) 
                 .Include(mp => mp.PortfolioItems)
-                .ThenInclude(p => p.Images) // Portfolyo öğelerinin içindeki resimleri dahil edin.
+                .ThenInclude(p => p.Images) 
                 .FirstOrDefaultAsync(mp => mp.Id == masterProfileId);
         }
     }
