@@ -84,7 +84,7 @@ namespace Repositories.Extensions
             {
                 options.AddPolicy("ReactJSCors", policy =>
                 {
-                    policy.WithOrigins("https://localhost:3000", "https://localhost:11405")
+                    policy.WithOrigins("http://localhost:5173")
                         .AllowAnyHeader()
                         .AllowAnyMethod();
                 });

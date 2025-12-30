@@ -1,35 +1,69 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { useAuth } from './context/AuthContext';
+import Login from './components/auth/Login';
+import Register from './components/auth/Register';
+import ProtectedRoute from './router/ProtectedRoute';
+import MasterLayout from './components/layout/MasterLayout';
+import MasterDashboard from './pages/master/MasterDashboard';
+import CreateMasterProfile from './pages/master/CreateMasterProfile';
+import EditMasterProfile from './pages/master/EditMasterProfile';
+import MyPortfolio from './pages/master/MyPortfolio';
+import AdvancedSearch from './pages/public/AdvancedSearch';           
+import Main from './pages/main/Main';                                  
+import MasterPublicProfile from './pages/public/MasterPublicProfile';  
 
-function App() {
-  const [count, setCount] = useState(0)
+function AppContent() {
+  const { loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        Yükleniyor...
+      </div>
+    );
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Routes>
+      {/* Herkese Açık Rotalar */}
+      <Route path="/" element={<Main />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/unauthorized" element={<div>Yetkiniz Yok</div>} />
+      <Route path="/masters/:id" element={<MasterPublicProfile />} />
+      <Route path="/search/advanced" element={<AdvancedSearch />} />  
+
+      {/* Usta paneli (korumalı) */}
+      <Route
+        path="/master/*"
+        element={
+          <ProtectedRoute requiredRoles={['User']}>
+            <MasterLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="dashboard" element={<MasterDashboard />} />
+        <Route path="profile/create" element={<CreateMasterProfile />} />
+        <Route path="profile/edit" element={<EditMasterProfile />} />
+        <Route path="portfolio" element={<MyPortfolio />} />
+        <Route index element={<Navigate to="dashboard" replace />} />
+      </Route>
+
+      {/* Fallback */}
+      <Route path="*" element={<div>Sayfa Bulunamadı</div>} />
+    </Routes>
+  );
 }
 
-export default App
+export default function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <div className="app">
+          <AppContent />
+        </div>
+      </Router>
+    </AuthProvider>
+  );
+}
