@@ -1,15 +1,13 @@
 ﻿using Microsoft.OpenApi.Models;
-using Repositories.Extensions; 
-using Services.Extensions;     
+using Repositories.Extensions;
+using Services.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddRepositories(builder.Configuration);
-
 builder.Services.AddServices(builder.Configuration);
 
 builder.Services.AddSwaggerGen(option =>
@@ -31,8 +29,8 @@ builder.Services.AddSwaggerGen(option =>
             {
                 Reference = new OpenApiReference
                 {
-                    Type=ReferenceType.SecurityScheme,
-                    Id="Bearer"
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
                 }
             },
             new string[]{}
@@ -42,7 +40,6 @@ builder.Services.AddSwaggerGen(option =>
 
 var app = builder.Build();
 
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -51,9 +48,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// CORS -> Session cookie için şart
+app.UseCors("ReactJSCors");
+
+// Session mutlaka authentication'dan önce
+app.UseSession();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
 app.Run();

@@ -17,15 +17,13 @@ const Register = () => {
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+
+  const { refreshUser } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setRegisterData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setRegisterData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -51,50 +49,41 @@ const Register = () => {
     if (registerData.phoneNumber.trim()) payload.phoneNumber = registerData.phoneNumber;
 
     try {
-      const response = await authService.register(payload);
-
-      const token = response.data?.token || response.data?.Token;
-      if (!token) throw new Error('Token gelmedi');
-
-      login(token);
-
-      // login yaptıktan sonra tekrar login'e gitmek yerine dashboard
+      await authService.register(payload);
+      await refreshUser();
       navigate('/master/dashboard', { replace: true });
     } catch (err) {
-      if (err.response) {
-        setError(err.response.data?.Errors?.join(', ') || 'Kayıt başarısız');
-      } else if (err.request) {
-        setError('Sunucuya bağlanılamadı');
-      } else {
-        setError('Kayıt sırasında bir hata oluştu');
-      }
+      setError(
+        err.response?.data?.Errors?.join(', ') ||
+        'Kayıt başarısız'
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  const isFormValid = () => {
-    return (
-      registerData.name &&
-      registerData.surName &&
-      registerData.username &&
-      registerData.password &&
-      registerData.confirmPassword &&
-      (registerData.email || registerData.phoneNumber)
-    );
-  };
+  const isFormValid = () =>
+    registerData.name &&
+    registerData.surName &&
+    registerData.username &&
+    registerData.password &&
+    registerData.confirmPassword &&
+    (registerData.email || registerData.phoneNumber);
 
   return (
     <div className="auth-page">
       <div className="auth-container">
-        <form className="auth-card" onSubmit={handleSubmit} noValidate>
+        <form className="auth-card auth-card-wide" onSubmit={handleSubmit} noValidate>
           <header className="auth-header">
-            <div className="auth-logo small" aria-hidden="true">U</div>
-            <h2 className="auth-title">Kayıt Ol</h2>
+            <div className="auth-logo">U</div>
+            <h2 className="auth-title">Hesap Oluştur</h2>
+            <p className="auth-subtitle">
+              Hizmet vermeye başlamak için kayıt olun
+            </p>
           </header>
 
           {error && (
-            <div className="auth-alert" role="alert" aria-live="assertive">
+            <div className="auth-alert">
               {error}
             </div>
           )}
@@ -102,113 +91,103 @@ const Register = () => {
           {/* Ad & Soyad */}
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="name">Ad <span className="req">*</span></label>
+              <label>Ad</label>
               <input
                 type="text"
-                id="name"
                 name="name"
                 value={registerData.name}
                 onChange={handleChange}
-                required
-                disabled={loading}
+                placeholder="Adınız"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="surName">Soyad <span className="req">*</span></label>
+              <label>Soyad</label>
               <input
                 type="text"
-                id="surName"
                 name="surName"
                 value={registerData.surName}
                 onChange={handleChange}
-                required
-                disabled={loading}
+                placeholder="Soyadınız"
               />
             </div>
           </div>
 
           {/* Kullanıcı adı */}
           <div className="form-group">
-            <label htmlFor="username">Kullanıcı Adı <span className="req">*</span></label>
+            <label>Kullanıcı Adı</label>
             <input
               type="text"
-              id="username"
               name="username"
               value={registerData.username}
               onChange={handleChange}
-              required
-              disabled={loading}
+              placeholder="kullanici_adi"
             />
           </div>
 
           {/* Email & Telefon */}
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="email">Email</label>
+              <label>Email</label>
               <input
                 type="email"
-                id="email"
                 name="email"
                 value={registerData.email}
                 onChange={handleChange}
-                disabled={loading}
+                placeholder="email@example.com"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="phoneNumber">Telefon Numarası</label>
+              <label>Telefon</label>
               <input
                 type="tel"
-                id="phoneNumber"
                 name="phoneNumber"
                 value={registerData.phoneNumber}
                 onChange={handleChange}
-                disabled={loading}
+                placeholder="05xx xxx xx xx"
               />
             </div>
           </div>
 
-          {/* Şifre & Tekrar */}
+          {/* Şifre */}
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="password">Şifre <span className="req">*</span></label>
+              <label>Şifre</label>
               <input
                 type="password"
-                id="password"
                 name="password"
                 value={registerData.password}
                 onChange={handleChange}
-                required
-                disabled={loading}
+                placeholder="••••••••"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="confirmPassword">Şifre (Tekrar) <span className="req">*</span></label>
+              <label>Şifre (Tekrar)</label>
               <input
                 type="password"
-                id="confirmPassword"
                 name="confirmPassword"
                 value={registerData.confirmPassword}
                 onChange={handleChange}
-                required
-                disabled={loading}
+                placeholder="••••••••"
               />
             </div>
           </div>
 
           <button
             type="submit"
-            className="auth-button"
+            className="auth-button primary"
             disabled={loading || !isFormValid()}
           >
-            {loading ? 'Kayıt yapılıyor...' : 'Kayıt Ol'}
+            {loading ? 'Kayıt oluşturuluyor...' : 'Kayıt Ol'}
           </button>
 
           <div className="auth-footer">
-            Zaten hesabınız var mı?{' '}
-            <Link to="/login" className="link-strong">Giriş Yap</Link>
+            Zaten hesabınız var mı?
+            <Link to="/login" className="auth-link">
+              Giriş Yap
+            </Link>
           </div>
         </form>
       </div>
