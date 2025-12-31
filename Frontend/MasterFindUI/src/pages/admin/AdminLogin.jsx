@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,24 +18,17 @@ const AdminLogin = () => {
     setError('');
     setLoading(true);
 
-    // 🔑 BACKEND'E UYUMLU PAYLOAD
     const payload = {
+      email: email.trim() || null,
+      phoneNumber: phoneNumber.trim() || null,
       password,
       rememberMe: false,
     };
-
-    if (email.trim()) {
-      payload.email = email.trim();
-    }
 
     try {
       const res = await authService.login(payload);
       const token = res.data.token;
 
-      // token kaydet
-      login(token);
-
-      // role kontrol
       const decoded = JSON.parse(atob(token.split('.')[1]));
       const role =
         decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
@@ -44,12 +38,12 @@ const AdminLogin = () => {
         return;
       }
 
+      login(token);
       navigate('/admin');
     } catch (err) {
-      console.error(err);
       setError(
         err.response?.data?.Errors?.join(', ') ||
-          'Admin girişi başarısız.'
+        'Admin girişi başarısız.'
       );
     } finally {
       setLoading(false);
@@ -57,21 +51,31 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="auth-page">
-      <form onSubmit={handleSubmit} className="auth-card">
-        <h2>Admin Girişi</h2>
+    <div style={styles.page}>
+      <form style={styles.card} onSubmit={handleSubmit}>
+        <h2 style={styles.title}>Admin Panel Girişi</h2>
+        <p style={styles.subtitle}>Yetkili kullanıcılar içindir</p>
 
-        {error && <p className="auth-error">{error}</p>}
+        {error && <div style={styles.errorBox}>{error}</div>}
 
         <input
+          style={styles.input}
           type="email"
-          placeholder="Admin Email"
+          placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          required
         />
 
         <input
+          style={styles.input}
+          type="text"
+          placeholder="Telefon (opsiyonel)"
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+        />
+
+        <input
+          style={styles.input}
           type="password"
           placeholder="Şifre"
           value={password}
@@ -79,12 +83,72 @@ const AdminLogin = () => {
           required
         />
 
-        <button disabled={loading}>
+        <button style={styles.button} disabled={loading}>
           {loading ? 'Giriş Yapılıyor...' : 'Giriş Yap'}
         </button>
       </form>
     </div>
   );
+};
+
+/* ================= STYLES ================= */
+
+const styles = {
+  page: {
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'linear-gradient(135deg, #4f46e5, #6366f1)',
+    fontFamily: 'Inter, system-ui, sans-serif',
+  },
+  card: {
+    width: 380,
+    background: '#fff',
+    padding: 32,
+    borderRadius: 16,
+    boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+  },
+  title: {
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  subtitle: {
+    textAlign: 'center',
+    marginBottom: 24,
+    color: '#6b7280',
+    fontSize: 14,
+  },
+  errorBox: {
+    background: '#fee2e2',
+    color: '#b91c1c',
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 12,
+    textAlign: 'center',
+    fontSize: 14,
+  },
+  input: {
+    width: '100%',
+    padding: 12,
+    borderRadius: 10,
+    border: '1px solid #d1d5db',
+    marginBottom: 14,
+    outline: 'none',
+    fontSize: 14,
+  },
+  button: {
+    width: '100%',
+    padding: 12,
+    borderRadius: 10,
+    border: 'none',
+    background: '#4f46e5',
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: 600,
+    cursor: 'pointer',
+    marginTop: 8,
+  },
 };
 
 export default AdminLogin;
