@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -31,7 +33,20 @@ namespace Repositories.Extensions
             .AddEntityFrameworkStores<DataApplicationContext>()
             .AddDefaultTokenProviders();
 
-            // 2. JWT AUTHENTICATION AYARLARI
+            /* SESSION SERVİSLERİ */
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(60);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true; 
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always; 
+            });
+           
+
+            //  JWT AUTH
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -40,38 +55,36 @@ namespace Repositories.Extensions
             })
             .AddJwtBearer(options =>
             {
-                options.SaveToken = true;
+                options.SaveToken = false;
                 options.RequireHttpsMetadata = false;
+
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidAudience = configuration["JWT:ValidAudience"],
                     ValidIssuer = configuration["JWT:ValidIssuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"])),
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(configuration["JWT:Secret"])),
                     ClockSkew = TimeSpan.FromMinutes(5)
                 };
 
+                // JWT'yi session'dan oku
                 options.Events = new JwtBearerEvents
                 {
                     OnMessageReceived = context =>
                     {
-                        var authorization = context.Request.Headers["Authorization"].ToString();
+                        // Session yoksa patlamasın
+                        if (context.HttpContext.Features.Get<ISessionFeature>()?.Session == null)
+                            return Task.CompletedTask;
 
-                        if (!string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-                        {
-                            context.Token = authorization.Substring("Bearer ".Length).Trim();
-                        }
-                        return Task.CompletedTask;
-                    },
+                        var token = context.HttpContext.Session.GetString("JWT");
+                        if (!string.IsNullOrEmpty(token))
+                            context.Token = token;
 
-                    OnAuthenticationFailed = context =>
-                    {
-                        Console.WriteLine($" >>> TOKEN FAILED: {context.Exception.Message}");
                         return Task.CompletedTask;
                     }
                 };
-                // -------------------------------------------------------------
             });
 
             services.AddCors(options =>
@@ -80,7 +93,8 @@ namespace Repositories.Extensions
                 {
                     policy.WithOrigins("http://localhost:5173")
                         .AllowAnyHeader()
-                        .AllowAnyMethod();
+                        .AllowAnyMethod()
+                        .AllowCredentials();
                 });
             });
 

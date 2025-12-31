@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { authService } from '../../services/authService';
 import '../../css/Auth.css';
 
 const Login = () => {
@@ -14,6 +13,7 @@ const Login = () => {
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
   const { login } = useAuth();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -40,17 +40,7 @@ const Login = () => {
     if (loginData.phoneNumber.trim()) payload.phoneNumber = loginData.phoneNumber;
 
     try {
-      const response = await authService.login(payload);
-
-      // Backend: return Ok(new { Token = result.Token });
-      // JSON serializer çoğu zaman "token" ya da "Token" döndürebilir -> ikisini de yakalayalım
-      const token = response.data?.token || response.data?.Token;
-
-      if (!token) {
-        throw new Error('Token gelmedi');
-      }
-
-      login(token);
+      await login(payload); // ✅ AuthContext.login(payload)
       navigate('/master/dashboard', { replace: true });
     } catch (err) {
       if (err.response) {

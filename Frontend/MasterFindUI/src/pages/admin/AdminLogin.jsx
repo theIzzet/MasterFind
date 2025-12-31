@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '../../services/authService';
 import { useAuth } from '../../context/AuthContext';
 
 const AdminLogin = () => {
@@ -10,7 +9,7 @@ const AdminLogin = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -19,32 +18,25 @@ const AdminLogin = () => {
     setLoading(true);
 
     const payload = {
-      email: email.trim() || null,
-      phoneNumber: phoneNumber.trim() || null,
+      email: email.trim() || undefined,
+      phoneNumber: phoneNumber.trim() || undefined,
       password,
       rememberMe: false,
     };
 
     try {
-      const res = await authService.login(payload);
-      const token = res.data.token;
+      const me = await login(payload); // ✅ session aç + me dön
 
-      const decoded = JSON.parse(atob(token.split('.')[1]));
-      const role =
-        decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-
-      if (role !== 'Admin') {
+      const roles = me?.roles || [];
+      if (!roles.includes('Admin')) {
+        await logout();
         setError('Bu hesap admin yetkisine sahip değil.');
         return;
       }
 
-      login(token);
-      navigate('/admin');
+      navigate('/admin', { replace: true });
     } catch (err) {
-      setError(
-        err.response?.data?.Errors?.join(', ') ||
-        'Admin girişi başarısız.'
-      );
+      setError(err.response?.data?.Errors?.join(', ') || 'Admin girişi başarısız.');
     } finally {
       setLoading(false);
     }
@@ -91,8 +83,6 @@ const AdminLogin = () => {
   );
 };
 
-/* ================= STYLES ================= */
-
 const styles = {
   page: {
     minHeight: '100vh',
@@ -109,16 +99,8 @@ const styles = {
     borderRadius: 16,
     boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
   },
-  title: {
-    textAlign: 'center',
-    marginBottom: 4,
-  },
-  subtitle: {
-    textAlign: 'center',
-    marginBottom: 24,
-    color: '#6b7280',
-    fontSize: 14,
-  },
+  title: { textAlign: 'center', marginBottom: 4 },
+  subtitle: { textAlign: 'center', marginBottom: 24, color: '#6b7280', fontSize: 14 },
   errorBox: {
     background: '#fee2e2',
     color: '#b91c1c',
