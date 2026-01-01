@@ -33,17 +33,6 @@ namespace Repositories.Extensions
             .AddEntityFrameworkStores<DataApplicationContext>()
             .AddDefaultTokenProviders();
 
-            /* SESSION SERVİSLERİ */
-            //services.AddDistributedMemoryCache();
-
-            //services.AddSession(options =>
-            //{
-            //    options.IdleTimeout = TimeSpan.FromMinutes(60);
-            //    options.Cookie.HttpOnly = true;
-            //    options.Cookie.IsEssential = true; 
-            //    options.Cookie.SameSite = SameSiteMode.None;
-            //    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; 
-            //});
            
 
             //  JWT AUTH
@@ -69,22 +58,6 @@ namespace Repositories.Extensions
                     ClockSkew = TimeSpan.FromMinutes(5)
                 };
 
-                // JWT'yi session'dan oku
-                //options.Events = new JwtBearerEvents
-                //{
-                //    OnMessageReceived = context =>
-                //    {
-                //        // Session yoksa patlamasın
-                //        if (context.HttpContext.Features.Get<ISessionFeature>()?.Session == null)
-                //            return Task.CompletedTask;
-
-                //        var token = context.HttpContext.Session.GetString("JWT");
-                //        if (!string.IsNullOrEmpty(token))
-                //            context.Token = token;
-
-                //        return Task.CompletedTask;
-                //    }
-                //};
 
                 options.Events = new JwtBearerEvents
                 {
