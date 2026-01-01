@@ -61,7 +61,7 @@ const AdminLogin = () => {
         <input
           style={styles.input}
           type="text"
-          placeholder="Telefon (opsiyonel)"
+          placeholder="Telefon"
           value={phoneNumber}
           onChange={(e) => setPhoneNumber(e.target.value)}
         />

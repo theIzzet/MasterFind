@@ -64,8 +64,6 @@ namespace Repositories.Extensions
                     OnMessageReceived = context =>
                     {
                         var accessToken = context.Request.Cookies["jwt"];
-                        // "jwt" isimli HttpOnly cookie'yi kontrol et
-                        // Bu isim AuthController'da cookie oluştururken verdiğin isimle AYNI olmalı.
                         if (context.Request.Cookies.ContainsKey("jwt"))
                         {
                             context.Token = context.Request.Cookies["jwt"];

@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { adminService } from '../../services/adminService';
 import { lookupsService } from '../../services/lookupsService';
+import { useAuth } from '../../context/AuthContext';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
   const [stats, setStats] = useState(null);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -38,6 +43,16 @@ const AdminDashboard = () => {
     loadDashboard();
     loadCategoriesWithServices();
   }, []);
+
+  /* ================= ACTIONS ================= */
+
+  const handleLogout = async () => {
+    try {
+      await logout(); // backend /auth/logout + context temizliği
+    } finally {
+      navigate('/admin/login', { replace: true });
+    }
+  };
 
   const createCategory = async () => {
     if (!newCategoryName) return;
@@ -83,10 +98,15 @@ const AdminDashboard = () => {
 
   return (
     <div style={styles.page}>
-      <h1 style={styles.pageTitle}>Admin Panel</h1>
+      {/* HEADER */}
+      <div style={styles.header}>
+        <h1 style={styles.pageTitle}>Admin Panel</h1>
+        <button style={styles.logoutBtn} onClick={handleLogout}>
+          Çıkış Yap
+        </button>
+      </div>
 
       {error && <p style={styles.error}>{error}</p>}
-
 
       <div style={styles.mainGrid}>
         {/* KATEGORİLER */}
@@ -195,17 +215,25 @@ const styles = {
     padding: 32,
     fontFamily: 'Inter, system-ui, sans-serif',
   },
-  pageTitle: {
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 24,
+  },
+  pageTitle: {},
+  logoutBtn: {
+    padding: '10px 16px',
+    borderRadius: 10,
+    border: 'none',
+    background: '#111827',
+    color: '#fff',
+    fontWeight: 600,
+    cursor: 'pointer',
   },
   error: {
     color: 'red',
     marginBottom: 12,
-  },
-  statsGrid: {
-    display: 'flex',
-    gap: 20,
-    marginBottom: 32,
   },
   mainGrid: {
     display: 'grid',
@@ -218,7 +246,6 @@ const styles = {
     background: '#fff',
     marginBottom: 8,
     cursor: 'pointer',
-    transition: 'all .2s',
   },
   categoryItemActive: {
     background: '#e0e7ff',
@@ -231,7 +258,6 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     marginBottom: 8,
-    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
   },
   input: {
     width: '100%',
@@ -239,7 +265,6 @@ const styles = {
     marginBottom: 10,
     borderRadius: 8,
     border: '1px solid #ccc',
-    outline: 'none',
   },
   row: {
     display: 'flex',
@@ -262,7 +287,6 @@ const styles = {
     color: '#fff',
     border: 'none',
     marginTop: 8,
-    cursor: 'pointer',
   },
   smallDangerBtn: {
     background: '#fee2e2',
@@ -287,21 +311,6 @@ const Panel = ({ title, children }) => (
   >
     <h2 style={{ marginBottom: 16 }}>{title}</h2>
     {children}
-  </div>
-);
-
-const StatCard = ({ title, value }) => (
-  <div
-    style={{
-      background: '#fff',
-      padding: 24,
-      borderRadius: 16,
-      textAlign: 'center',
-      boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
-    }}
-  >
-    <h3 style={{ marginBottom: 8 }}>{title}</h3>
-    <p style={{ fontSize: 28, fontWeight: 700 }}>{value ?? '-'}</p>
   </div>
 );
 
