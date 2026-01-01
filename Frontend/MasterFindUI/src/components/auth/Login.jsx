@@ -40,13 +40,24 @@ const Login = () => {
     if (loginData.phoneNumber.trim()) payload.phoneNumber = loginData.phoneNumber;
 
     try {
-      await login(payload); 
+      await login(payload);
       navigate('/master/dashboard', { replace: true });
     } catch (err) {
       if (err.response) {
-        setError(err.response.data?.Errors?.join(', ') || 'Giriş başarısız');
+        // Önce Rate Limit kontrolü 
+        if (err.response.status === 429) {
+          setError("Çok fazla hatalı giriş denemesi yaptınız. Lütfen 1 dakika bekleyin.");
+        }
+
+        else if (err.response.data?.Errors && Array.isArray(err.response.data.Errors)) {
+          setError(err.response.data.Errors.join(', '));
+        }
+
+        else {
+          setError('Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
+        }
       } else {
-        setError('Giriş sırasında bir hata oluştu');
+        setError('5 den fazla başarısız giriş işleminde bulundunuz. 1 dakika sonra tekrar deneyiniz.');
       }
     } finally {
       setLoading(false);
