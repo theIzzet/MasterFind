@@ -22,13 +22,13 @@ public class AuthController : ControllerBase
     {
         var cookieOptions = new CookieOptions
         {
-            HttpOnly = true,    // JS bu cookie'yi okuyamaz (XSS Koruması)
-            Expires = DateTime.UtcNow.AddHours(1), // Token süresiyle aynı olsun
-            Secure = true,      // HTTPS zorunlu (Localhost'ta çalışması için SSL kullanmalısın)
-            SameSite = SameSiteMode.None, // React(5173) ve API(7054) farklı portta olduğu için 'None' şart
-            // Production'da SameSiteMode.Lax veya Strict yapıp aynı domainde kullanmalısın.
-            Path = "/", // Tüm uygulamada geçerli
-            IsEssential = true // GDPR için gerekli
+            HttpOnly = true,    
+            Expires = DateTime.UtcNow.AddHours(1), 
+            Secure = true,    
+            SameSite = SameSiteMode.None, 
+           
+            Path = "/", 
+            IsEssential = true 
         };
 
         Response.Cookies.Append("jwt", token, cookieOptions);
@@ -42,7 +42,7 @@ public class AuthController : ControllerBase
         if (!result.Success)
             return BadRequest(new { Errors = result.Errors });
 
-        //HttpContext.Session.SetString("JWT", result.Token);
+        
 
         SetJwtCookie(result.Token);
 
@@ -57,7 +57,7 @@ public class AuthController : ControllerBase
         if (!result.Success)
             return BadRequest(new { Errors = result.Errors });
 
-        //HttpContext.Session.SetString("JWT", result.Token);
+      
         
         SetJwtCookie(result.Token);
 
@@ -67,7 +67,7 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     public IActionResult Logout()
     {
-        //HttpContext.Session.Clear();
+        
 
         Response.Cookies.Delete("jwt", new CookieOptions
         {

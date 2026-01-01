@@ -21,7 +21,7 @@ namespace WebApi.Controllers
         [Authorize(Roles = "User")]
         public async Task<IActionResult> GenerateBio([FromBody] GenerateBioDto dto)
         {
-            // Basit validasyon
+            //  validasyon
             if (string.IsNullOrEmpty(dto.JobTitle))
                 return BadRequest("Lütfen önce hizmet kategorinizi seçin.");
 

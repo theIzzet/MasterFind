@@ -24,7 +24,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
         [HttpGet("search")]
-        [AllowAnonymous] // Bu endpoint'e herkesin erişebilmesi için.
+        [AllowAnonymous] 
         public async Task<IActionResult> SearchMasters([FromQuery] int? serviceCategoryId, [FromQuery] int? locationId)
         {
             var result = await _masterProfileService.SearchMastersAsync(serviceCategoryId, locationId);

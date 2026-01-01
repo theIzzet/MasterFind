@@ -64,7 +64,7 @@ builder.Services.AddRateLimiter(options =>
     {
         opt.PermitLimit = 5; 
         opt.Window = TimeSpan.FromMinutes(1);
-        opt.QueueLimit = 0; // Kuyruğa alma yok
+        opt.QueueLimit = 0; 
         
     });
 });

@@ -27,7 +27,7 @@ namespace Services.AI
             var model = _configuration["AI:Model"];
             var url = "https://openrouter.ai/api/v1/chat/completions";
 
-            // Prompt Hazırlama
+            
             var prompt = $@"
                 Aşağıdaki bilgilere sahip bir hizmet ustası için müşterilere güven veren, 
                 profesyonel ve samimi bir 'Hakkımda' (Biyografi) yazısı yaz.
@@ -40,7 +40,7 @@ namespace Services.AI
                 
                 Sadece biyografi metnini döndür, 'İşte metniniz' gibi giriş cümleleri kurma.";
 
-            // Request Body Hazırlama
+            // Request Body 
             var requestBody = new
             {
                 model = model,
@@ -48,7 +48,7 @@ namespace Services.AI
                 {
                     new { role = "user", content = prompt }
                 },
-                temperature = 0.7 // Yaratıcılık ayarı
+                temperature = 0.7 
             };
 
             var jsonContent = JsonConvert.SerializeObject(requestBody);
@@ -56,7 +56,7 @@ namespace Services.AI
 
             // Header Ayarları
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
-            // OpenRouter sıralama için bu headerları önerir (Zorunlu değil ama iyi pratik)
+            
             _httpClient.DefaultRequestHeaders.Add("HTTP-Referer", "https://localhost:7054");
             _httpClient.DefaultRequestHeaders.Add("X-Title", "MasterFind App");
 
@@ -75,7 +75,7 @@ namespace Services.AI
 
                 // OpenRouter/OpenAI response formatından metni çekme
                 string generatedText = result.choices[0].message.content;
-                return generatedText.Trim().Replace("\"", ""); // Tırnak işaretlerini temizle
+                return generatedText.Trim().Replace("\"", "");
             }
             catch (Exception ex)
             {
