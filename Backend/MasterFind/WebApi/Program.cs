@@ -1,7 +1,7 @@
 ﻿using Microsoft.OpenApi.Models;
 using Repositories.Extensions;
 using Services.Extensions;
-using Microsoft.Extensions.FileProviders; // Bunu eklemeyi unutma
+using Microsoft.Extensions.FileProviders; 
 
 var builder = WebApplication.CreateBuilder(args);
 
