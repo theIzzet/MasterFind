@@ -40,7 +40,7 @@ const Login = () => {
     if (loginData.phoneNumber.trim()) payload.phoneNumber = loginData.phoneNumber;
 
     try {
-      await login(payload); // ✅ AuthContext.login(payload)
+      await login(payload); 
       navigate('/master/dashboard', { replace: true });
     } catch (err) {
       if (err.response) {

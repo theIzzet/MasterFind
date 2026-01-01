@@ -12,7 +12,7 @@ const ProtectedRoute = ({ children, requiredRoles = [] }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // user.role => "Admin"
+
   // user.roles => ["Admin"]
   const userRoles = Array.isArray(user.roles)
     ? user.roles
