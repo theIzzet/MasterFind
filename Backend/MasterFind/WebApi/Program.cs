@@ -52,7 +52,7 @@ app.UseHttpsRedirection();
 app.UseCors("ReactJSCors");
 
 // Session mutlaka authentication'dan önce
-app.UseSession();
+//app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();

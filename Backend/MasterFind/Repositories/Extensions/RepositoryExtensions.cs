@@ -34,16 +34,16 @@ namespace Repositories.Extensions
             .AddDefaultTokenProviders();
 
             /* SESSION SERVİSLERİ */
-            services.AddDistributedMemoryCache();
+            //services.AddDistributedMemoryCache();
 
-            services.AddSession(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromMinutes(60);
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true; 
-                options.Cookie.SameSite = SameSiteMode.None;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always; 
-            });
+            //services.AddSession(options =>
+            //{
+            //    options.IdleTimeout = TimeSpan.FromMinutes(60);
+            //    options.Cookie.HttpOnly = true;
+            //    options.Cookie.IsEssential = true; 
+            //    options.Cookie.SameSite = SameSiteMode.None;
+            //    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; 
+            //});
            
 
             //  JWT AUTH
@@ -70,17 +70,33 @@ namespace Repositories.Extensions
                 };
 
                 // JWT'yi session'dan oku
+                //options.Events = new JwtBearerEvents
+                //{
+                //    OnMessageReceived = context =>
+                //    {
+                //        // Session yoksa patlamasın
+                //        if (context.HttpContext.Features.Get<ISessionFeature>()?.Session == null)
+                //            return Task.CompletedTask;
+
+                //        var token = context.HttpContext.Session.GetString("JWT");
+                //        if (!string.IsNullOrEmpty(token))
+                //            context.Token = token;
+
+                //        return Task.CompletedTask;
+                //    }
+                //};
+
                 options.Events = new JwtBearerEvents
                 {
                     OnMessageReceived = context =>
                     {
-                        // Session yoksa patlamasın
-                        if (context.HttpContext.Features.Get<ISessionFeature>()?.Session == null)
-                            return Task.CompletedTask;
-
-                        var token = context.HttpContext.Session.GetString("JWT");
-                        if (!string.IsNullOrEmpty(token))
-                            context.Token = token;
+                        var accessToken = context.Request.Cookies["jwt"];
+                        // "jwt" isimli HttpOnly cookie'yi kontrol et
+                        // Bu isim AuthController'da cookie oluştururken verdiğin isimle AYNI olmalı.
+                        if (context.Request.Cookies.ContainsKey("jwt"))
+                        {
+                            context.Token = context.Request.Cookies["jwt"];
+                        }
 
                         return Task.CompletedTask;
                     }
