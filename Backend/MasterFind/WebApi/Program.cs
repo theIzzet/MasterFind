@@ -47,7 +47,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseHsts();
 // CORS -> Session cookie için şart
 app.UseCors("ReactJSCors");
 
