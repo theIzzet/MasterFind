@@ -5,7 +5,7 @@ import '../../css/MasterLayout.css';
 
 const MasterLayout = () => {
     return (
-        // Bu ana div, navbar'ın sabit kalmasını ve içeriğin doğru konumlanmasını sağlar.
+        
         <div className="master-layout-container">
             <Navbar />
             <main className="main-content">

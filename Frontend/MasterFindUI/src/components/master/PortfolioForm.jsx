@@ -33,7 +33,7 @@ const PortfolioForm = ({ availableServices, onSuccess, onCancel }) => {
 
         try {
             await masterService.addPortfolioItem(formData);
-            onSuccess(); // Başarılı olunca ana bileşeni bilgilendir
+            onSuccess(); 
         } catch (err) {
             const errorMsg = err.response?.data?.Errors?.join(', ') || 'Portfolyo eklenirken bir hata oluştu.';
             setError(errorMsg);

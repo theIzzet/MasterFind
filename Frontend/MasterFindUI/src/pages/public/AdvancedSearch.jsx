@@ -1,4 +1,3 @@
-// src/pages/public/AdvancedSearch.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import PublicNavbar from "../../components/layout/PublicNavbar";
@@ -18,8 +17,8 @@ function buildAssetUrl(pathOrUrl) {
 }
 
 export default function AdvancedSearch() {
-  const [svcCats, setSvcCats] = useState([]);     // {id,name,services:[{id,name}]}
-  const [locations, setLocations] = useState([]); // {id, il, ilce}
+  const [svcCats, setSvcCats] = useState([]);     
+  const [locations, setLocations] = useState([]); 
   const [error, setError] = useState("");
 
   // selections (çoklu)

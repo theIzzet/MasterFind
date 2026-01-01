@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import '../../css/MasterProfileForm.css';
 import { aiService } from '../../services/aiService';
-// Backend adresini burada da tanımlıyoruz ki mevcut resimleri gösterebilelim.
-const DEV_API_BASE_URL = 'https://localhost:7054'; // Kendi backend portunuzu yazın
+
+const DEV_API_BASE_URL = 'https://localhost:7054'; 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? DEV_API_BASE_URL : '');
 
 
 const MasterProfileForm = ({
     onSubmit,
-    initialData = null, // Düzenleme için başlangıç verisi
+    initialData = null,
     serviceCategories = [],
     locations = [],
     submitButtonText = "Kaydet"

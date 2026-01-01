@@ -1,16 +1,15 @@
-// src/pages/public/MasterPublicProfile.jsx
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useLocation, useParams, Link, useNavigate } from "react-router-dom";
 import PublicNavbar from "../../components/layout/PublicNavbar";
 import { lookupsService } from "../../services/lookupsService";
 import "../../css/MasterPublicProfile.css";
 
-/** --- Backend base URL (ENV > DEV fallback) --- */
+/** --- Backend base URL --- */
 const DEV_API_BASE_URL = "https://localhost:7054";
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? DEV_API_BASE_URL : DEV_API_BASE_URL);
 
-/** Relative yol gelirse backend domaini ile absolute URL üret */
+
 function buildAssetUrl(pathOrUrl) {
   if (!pathOrUrl) return "";
   if (/^https?:\/\//i.test(pathOrUrl)) return pathOrUrl; // zaten absolute
@@ -295,13 +294,13 @@ const MasterPublicProfile = () => {
               <div className="actions">
                 {master.email && (
                   <a href={`mailto:${master.email}`} className="btn btn-primary">
-                    <span className="btn-title">✉️ E-posta Gönder</span>
+                    <span className="btn-title">✉️ E-posta Adresi</span>
                     <span className="btn-sub">{master.email}</span>
                   </a>
                 )}
                 {safeTel && (
                   <a href={`tel:${safeTel}`} className="btn btn-success">
-                    <span className="btn-title">📞 Ara</span>
+                    <span className="btn-title">Ara</span>
                     <span className="btn-sub">{master.phoneNumber}</span>
                   </a>
                 )}

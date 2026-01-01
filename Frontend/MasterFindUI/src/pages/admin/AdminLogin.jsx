@@ -25,7 +25,7 @@ const AdminLogin = () => {
     };
 
     try {
-      const me = await login(payload); // ✅ session aç + me dön
+      const me = await login(payload); 
 
       const roles = me?.roles || [];
       if (!roles.includes('Admin')) {
