@@ -1,23 +1,17 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './context/AuthContext';
-
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
-
 import ProtectedRoute from './router/ProtectedRoute';
-
 import MasterLayout from './components/layout/MasterLayout';
 import MasterDashboard from './pages/master/MasterDashboard';
 import CreateMasterProfile from './pages/master/CreateMasterProfile';
 import EditMasterProfile from './pages/master/EditMasterProfile';
 import MyPortfolio from './pages/master/MyPortfolio';
-
 import AdvancedSearch from './pages/public/AdvancedSearch';
 import Main from './pages/main/Main';
 import MasterPublicProfile from './pages/public/MasterPublicProfile';
-
-// 🆕 ADMIN
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 
@@ -34,7 +28,7 @@ function AppContent() {
 
   return (
     <Routes>
-      {/* ===== HERKESE AÇIK ===== */}
+      {/* Everybody */}
       <Route path="/" element={<Main />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />

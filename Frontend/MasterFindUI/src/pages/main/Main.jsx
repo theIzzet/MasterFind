@@ -8,14 +8,12 @@ const DEV_API_BASE_URL = "https://localhost:7054";
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? DEV_API_BASE_URL : DEV_API_BASE_URL);
 
-/** Relative yol gelirse backend domaini ile absolute URL üret */
 function buildAssetUrl(pathOrUrl) {
   if (!pathOrUrl) return "";
   if (/^https?:\/\//i.test(pathOrUrl)) return pathOrUrl;       
   if (pathOrUrl.startsWith("/")) return `${API_BASE_URL}${pathOrUrl}`;
   return `${API_BASE_URL}/${pathOrUrl}`;
 }
-
 
 function CategoryIcon({ name }) {
   const n = (name || "").toLowerCase();
@@ -99,7 +97,7 @@ function CategoryIcon({ name }) {
 
 const Main2 = () => {
   // Lookups
-  const [svcCats, setSvcCats] = useState([]);      // /lookups/serviceswithcategory
+  const [svcCats, setSvcCats] = useState([]);     
   const [locations, setLocations] = useState([]);  
   const [loadingLookups, setLoadingLookups] = useState(true);
   const [error, setError] = useState("");

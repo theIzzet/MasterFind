@@ -1,6 +1,5 @@
 import React from 'react';
 import '../../css/ConfirmModal.css';
-// projenizin herhangi bir yerinde kullanabileceğiniz, yeniden kullanılabilir onay penceresi bileşenidir.
 const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message }) => {
     if (!isOpen) {
         return null;

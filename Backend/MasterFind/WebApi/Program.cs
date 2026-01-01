@@ -1,6 +1,7 @@
 ﻿using Microsoft.OpenApi.Models;
 using Repositories.Extensions;
 using Services.Extensions;
+using Microsoft.Extensions.FileProviders; // Bunu eklemeyi unutma
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,13 +47,29 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+
+app.UseStaticFiles();
+
+
+var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
+if (!Directory.Exists(uploadsPath))
+{
+    Directory.CreateDirectory(uploadsPath);
+}
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadsPath),
+    RequestPath = "/uploads"
+});
+
+
+
 app.UseHttpsRedirection();
 app.UseHsts();
-// CORS -> Session cookie için şart
-app.UseCors("ReactJSCors");
 
-// Session mutlaka authentication'dan önce
-//app.UseSession();
+app.UseCors("ReactJSCors");
 
 app.UseAuthentication();
 app.UseAuthorization();
