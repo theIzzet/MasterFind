@@ -25,7 +25,7 @@ const AdminLogin = () => {
     };
 
     try {
-      const me = await login(payload); // ✅ session aç + me dön
+      const me = await login(payload); 
 
       const roles = me?.roles || [];
       if (!roles.includes('Admin')) {
@@ -61,7 +61,7 @@ const AdminLogin = () => {
         <input
           style={styles.input}
           type="text"
-          placeholder="Telefon (opsiyonel)"
+          placeholder="Telefon"
           value={phoneNumber}
           onChange={(e) => setPhoneNumber(e.target.value)}
         />

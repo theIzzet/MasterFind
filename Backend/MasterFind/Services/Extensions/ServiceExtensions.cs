@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Reflection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Services.Admin;
+using Services.AI;
 using Services.Auth;
 using Services.Master;
-using System.Reflection;
 
 namespace Services.Extensions
 {
@@ -22,6 +23,7 @@ namespace Services.Extensions
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<IMasterProfileService, MasterProfileService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IAIService, AiService>();
 
             return services;
         }
