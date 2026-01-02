@@ -1,0 +1,42 @@
+services:
+  # --- BACKEND SERVİSİ ---
+  backend:
+    container_name: masterfind_backend
+    build:
+      context: ./Backend/MasterFind  # Backend Solution klasörünü gösteriyoruz
+      dockerfile: WebApi/Dockerfile  # Dockerfile'ın yerini belirtiyoruz
+    ports:
+      - "7054:8080" # Dışarıdan 7054, içeriden 8080 portu
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      # Veritabanı yolunu container içindeki /app/data klasörüne yönlendiriyoruz
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/MasterFindingDb.db
+      # GÜVENLİK: secrets.json içindeki değerleri buraya yapıştır
+      - JWT__Secret=BURAYA_GERCEK_UZUN_JWT_SECRET_KEYINI_YAPISTIR
+      - JWT__ValidIssuer=http://localhost:7054
+      - JWT__ValidAudience=http://localhost:7054
+      - AI__OpenRouterApiKey=BURAYA_GERCEK_AI_API_KEYINI_YAPISTIR
+    volumes:
+      # Veriler kaybolmasın diye yerel bilgisayarınla container'ı eşleştiriyoruz
+      - ./docker_data:/app/data 
+      - ./docker_uploads:/app/uploads
+    networks:
+      - masterfind-network
+
+  # --- FRONTEND SERVİSİ ---
+  frontend:
+    container_name: masterfind_frontend
+    build:
+      context: ./Frontend/MasterFindUI # Frontend projesinin yolu
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80" # Tarayıcıdan 5173 ile erişilecek, içeride Nginx 80 çalışıyor
+    depends_on:
+      - backend
+    networks:
+      - masterfind-network
+
+networks:
+  masterfind-network:
+    driver: bridge

@@ -7,7 +7,7 @@ using Services.Auth.Dtos;
 
 [ApiController]
 [Route("api/[controller]")]
-[EnableRateLimiting("AuthPolicy")]
+//[EnableRateLimiting("AuthPolicy")]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
