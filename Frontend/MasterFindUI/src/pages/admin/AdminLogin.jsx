@@ -25,7 +25,7 @@ const AdminLogin = () => {
     };
 
     try {
-      const me = await login(payload); 
+      const me = await login(payload);
 
       const roles = me?.roles || [];
       if (!roles.includes('Admin')) {
@@ -36,7 +36,22 @@ const AdminLogin = () => {
 
       navigate('/admin', { replace: true });
     } catch (err) {
-      setError(err.response?.data?.Errors?.join(', ') || 'Admin girişi başarısız.');
+      if (err.response) {
+        // Önce Rate Limit kontrolü 
+        if (err.response.status === 429) {
+          setError("Çok fazla hatalı giriş denemesi yaptınız. Lütfen 1 dakika bekleyin.");
+        }
+
+        else if (err.response.data?.Errors && Array.isArray(err.response.data.Errors)) {
+          setError(err.response.data.Errors.join(', '));
+        }
+
+        else {
+          setError('Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
+        }
+      } else {
+        setError('5 den fazla başarısız giriş işleminde bulundunuz. 1 dakika sonra tekrar deneyiniz.');
+      }
     } finally {
       setLoading(false);
     }
