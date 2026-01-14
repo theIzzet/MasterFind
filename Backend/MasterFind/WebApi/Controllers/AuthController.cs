@@ -25,7 +25,7 @@ public class AuthController : ControllerBase
             HttpOnly = true,    
             Expires = DateTime.UtcNow.AddHours(1), 
             Secure = true,    
-            SameSite = SameSiteMode.None, 
+            SameSite = SameSiteMode.Strict, 
            
             Path = "/", 
             IsEssential = true 
